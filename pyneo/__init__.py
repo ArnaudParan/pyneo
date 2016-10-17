@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""pyneo package, gae compatible neo4j requests
+"""
+    Pyneo
+    =====
 
-This module lets one make cypher requests to a neo4j server on a google app
-engine application. In order to be appengine compatible, the code uses only
-urllib for the requests
+    This module lets one make cypher requests to a neo4j server on a google app
+    engine application. In order to be appengine compatible, the code uses only
+    urllib for the requests
 
-Example:
+    :Example:
     If you want to send cypher requests to a remote server, you need to tell
     pyneo your username and password first for neo4j authentication.
 
@@ -54,9 +56,11 @@ Example:
     and hopefully, soon you will be able to download our graph polymer
     component which directly displays that data
 
-TODO:
-    * Handle returning nodes, relations and paths
-    * unify graphs with normal queries
+    .. warnings:: don't use requests which return nodes, relationships or
+    graphs with send_query. That functionnality is not implemented yet
+
+    .. todo:: handle returning nodes, relations and paths
+              unify graphs with normal queries
 """
 
 from pyneo.graph_handler import GraphHandler  # noqa # pylint: disable=unused-import

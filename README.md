@@ -23,7 +23,7 @@ Then, you can send cypher requests to your neo4j server
 ```
 
 Be careful with your requests because we don't handle returning nodes,
-relations or paths yet. However, you can return ID(n), LABELS(n) or
+relations or paths yet. However, you can return ID(n), LABELS(n),
 n.name or other parameters.
 
 One day, you might want to get a full graph to display it in d3js as

@@ -1,48 +1,93 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""The module which sends cypher queries to the neo4j database and formats the results
-It's a kind of replacement of py2neo while it does not work with gae, but it is compatible
-with py2neo for replacement when the library will be compatible"""
+"""
+    GraphHandler
+    ============
 
-import urllib
+    Submodule containing the class which sends the cypher requests to the
+    server.
+"""
+
 import urllib2
 import json
 import base64
 
-class GraphHandler(object):
-    """Handles sending cypher requests to a remote neo4j server with the rest api"""
-    def __init__(self, host_port, username, password):
-        """creates the variables necessary for the future requests"""
-        self.username = username
-        self.password = password
-        self.query_url = "http://{0}/db/data/cypher".format(host_port)
-        self.graph_query_url = "http://{0}/db/data/transaction/commit".format(host_port)
-        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        password_mgr.add_password(None, self.query_url, username, password)
-        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-        self.opener = urllib2.build_opener(handler)
 
-    def send_query(self, query, **kwargs):
-        """The important function, it sends a cypher query to the neo4j database and returns the
-        formatted result"""
-        query_params = kwargs
+class GraphHandler(object):
+    """
+        GraphHandler
+        ============
+
+        This class stores what is necessary for authentication with the
+        neo4j server, and sends requests to that server with the
+        :func:`send_query` function. That class also allows you to get
+        graphs for d3js displaying with the :func:`ask_graph` function.
+
+        .. warnings:: don't use requests which return nodes, relationships or
+        graphs with send_query. That functionnality is not implemented yet
+    """
+
+    def __init__(self, host_port, username, password):
+        """initializes the authentification parameters
+
+            - parameters using ``:param <name>: <description>``
+            - type of the parameters ``:type <name>: <description>``
+            - returns using ``:returns: <description>``
+            - examples (doctest)
+            - seealso using ``.. seealso:: text``
+            - notes using ``.. note:: text``
+            - warning using ``.. warning:: text``
+            - todo ``.. todo:: text``
+
+            :param host_port: the 'host:port' of the server
+            :param username: the username you use to authenticate with neo4j
+            :param password: the password you use to authenticate with neo4j
+            :type host_port: string
+            :type username: string
+            :type password: string
+
+            :Example:
+
+                >>> graph_handler = GraphHandler(host_port='localhost:7474',
+                >>>                              username='neo4j',
+                >>>                              password='neo4j')
+        """
+        base64string = base64.encodestring('{}:{}'.format(username,
+                                                          password))[:-1]
+        self.authheader = "Basic {}".format(base64string)
+        self.query_url = "http://{0}/db/data/cypher".format(host_port)
+        self.graph_query_url = "http://{0}/db/data/transaction/commit"\
+            .format(host_port)
+
+    def send_query(self, query):
+        """
+        The important function, it sends a cypher query to the neo4j database
+        and returns the formatted result
+        """
+        query_params = {}
         query_params["query"] = query
-        response_dict =\
-                json.load(self.opener.open(self.query_url, urllib.urlencode(query_params)))
+        req = urllib2.Request(self.query_url,
+                              data=json.dumps(query_params))
+        req.add_header('Content-Type', 'application/json')
+        req.add_header("Authorization", self.authheader)
+        handle = urllib2.urlopen(req)
+        response_dict = json.loads(handle.read())
         formatted_response = GraphHandler.format_query_response(response_dict)
         return formatted_response
 
-    def ask_graph(self, query, **kwargs):
-        """The important function, it sends a graph cypher query to the neo4j database and returns the
-        formatted result"""
-        query_params = kwargs
+    def ask_graph(self, query):
+        """
+        The important function, it sends a graph cypher query to the neo4j
+        database and returns the formatted result
+        """
+        query_params = {}
         query_params["statement"] = query
         query_params["resultDataContents"] = ["graph"]
-        req = urllib2.Request(self.graph_query_url, data=json.dumps({"statements": [query_params]}))
+        query_params = {"statements": [query_params]}
+        req = urllib2.Request(self.graph_query_url,
+                              data=json.dumps(query_params))
         req.add_header('Content-Type', 'application/json')
-        base64string = base64.encodestring('%s:%s' % (self.username, self.password))[:-1]
-        authheader =  "Basic %s" % base64string
-        req.add_header("Authorization", authheader)
+        req.add_header("Authorization", self.authheader)
         handle = urllib2.urlopen(req)
         response_dict = json.loads(handle.read())
         return response_dict
