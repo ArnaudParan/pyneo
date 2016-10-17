@@ -31,7 +31,21 @@ class TestGraphHandler(unittest.TestCase):
         }
         formatted_response =\
             self.graph_handler.format_query_response(response)
-        self.assert_eq(
-            formatted_response[0]["b"],
-            1,
-            "{0} equal to {1}".format(formatted_response[0]["b"], 1))
+        self.assert_eq(formatted_response[0]["b"], 1)
+
+    def test_protect(self):
+        """ensures that the protect function does protect correctly
+        strings, for example
+            >>> g.protect('"hey"')
+            '\"hey\"'
+        """
+        test_str = [
+            {'orig': 'Hey', 'protected': 'Hey'},
+            {'orig': '"Hey"', 'protected': '\\"Hey\\"'},
+            {'orig': '\"Hey\"', 'protected': '\\\"Hey\\\"'},
+            {'orig': '\'Hey\'', 'protected': '\\\'Hey\\\''}
+            ]
+
+        for tested in test_str:
+            protected = self.graph_handler.protect(tested['orig'])
+            self.assert_eq(protected, tested['protected'])

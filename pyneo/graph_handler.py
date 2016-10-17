@@ -107,4 +107,4 @@ class GraphHandler(object):
     @staticmethod
     def protect(string):
         """replaces the \' in strings by \\\', one kind of security"""
-        return string.replace("'", "\\\'")
+        return string.replace("'", "\\\'").replace("\"", "\\\"")
