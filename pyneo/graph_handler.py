@@ -93,9 +93,10 @@ class GraphHandler(object):
                 >>>                p="test")
                 [{'id': 20}]
         """
-        query_params = {}
-        query_params['query'] = query
-        query_params['params'] = params
+        query_params = {
+            'query': query,
+            'params': params
+            }
 
         req = urllib2.Request(self.query_url,
                               data=json.dumps(query_params))
@@ -153,11 +154,13 @@ class GraphHandler(object):
                 'errors': []
                 }
         """
-        query_params = {}
-        query_params['statement'] = query
-        query_params['resultDataContents'] = ['graph']
-        query_params['parameters'] = params
-        query_params = {'statements': [query_params]}
+        query_params = {
+            'statements': [{
+                'statement': query,
+                'parameters': params,
+                'resultDataContents': ['graph']
+                }]
+            }
 
         req = urllib2.Request(self.graph_query_url,
                               data=json.dumps(query_params))
