@@ -22,6 +22,12 @@
     >>> graph_handler.send_query('MATCH (n) RETURN ID(n) AS id LIMIT 25')
     [{'id': 0}, {'id': 1}, {'id': 2}, {'id': 3}, ..., {'id': 23}, {'id': 24}]
 
+    And with parameters
+
+    >>> graph_handler.\
+    >>>     send_query('MATCH (n {name: {p}}) RETURN ID(n)', p="test")
+    [{'id': 20}]
+
     Be careful with your requests because we don't handle returning nodes,
     relations or paths yet. However, you can return ID(n), LABELS(n) or
     n.name or other parameters.

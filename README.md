@@ -22,6 +22,16 @@ Then, you can send cypher requests to your neo4j server
 [{'id': 0}, {'id': 1}, {'id': 2}, {'id': 3}, ..., {'id': 23}, {'id': 24}]
 ```
 
+And if you want to add parameters (and that's the good way if you want to avoid injections)
+
+```python
+And with parameters
+
+>>> graph_handler.\
+>>>     send_query('MATCH (n {name: {p}}) RETURN ID(n)', p="test")
+[{'id': 20}]
+```
+
 Be careful with your requests because we don't handle returning nodes,
 relations or paths yet. However, you can return ID(n), LABELS(n),
 n.name or other parameters.
