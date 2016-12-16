@@ -27,7 +27,7 @@ class GraphHandler(object):
         graphs with send_query. That functionnality is not implemented yet
     """
 
-    def __init__(self, host_port, username, password):
+    def __init__(self, host_port, username, password, secure=False):
         """initializes the authentification parameters
 
             - parameters using ``:param <name>: <description>``
@@ -42,9 +42,12 @@ class GraphHandler(object):
             :param host_port: the 'host:port' of the server
             :param username: the username you use to authenticate with neo4j
             :param password: the password you use to authenticate with neo4j
+            :param secure: whether the request should be performed over http
+                or https
             :type host_port: string
             :type username: string
             :type password: string
+            :type secure: bool
 
             :Example:
 
@@ -54,10 +57,11 @@ class GraphHandler(object):
         """
         base64string = base64.encodestring('{}:{}'.format(username,
                                                           password))[:-1]
+        protocol = 'https' if secure else 'http'
         self.authheader = 'Basic {}'.format(base64string)
-        self.query_url = 'http://{0}/db/data/cypher'.format(host_port)
-        self.graph_query_url = 'http://{0}/db/data/transaction/commit'\
-            .format(host_port)
+        self.query_url = '{}://{}/db/data/cypher'.format(protocol, host_port)
+        self.graph_query_url = '{}://{}/db/data/transaction/commit'\
+            .format(protocol, host_port)
 
     def send_query(self, query, **params):
         """the function that sends normal cypher queries to the server
