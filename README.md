@@ -65,6 +65,9 @@ If you want to do so, from now on you need to send a graph query
 }
 ```
 
+If you want to perform your request over https, when initiating the
+graph, you can provide the parameter secure=True
+
 and hopefully, soon you will be able to download our graph polymer
 component which directly displays that data
 

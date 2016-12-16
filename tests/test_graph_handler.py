@@ -33,6 +33,23 @@ class TestGraphHandler(unittest.TestCase):
             ]
         }
 
+    @mock.patch('urllib2.urlopen')
+    def test_secure(self, urllib_mock):
+        """tests the fact that queries are sent using https"""
+        graph_handler = GraphHandler('localhost:7474', 'neo4j', 'neo4j',
+                                     secure=True)
+        response_stream = StringIO.StringIO(json.dumps(self.default_response))
+        urllib_mock.return_value = response_stream
+        query = 'MATCH (n) RETURN n'
+        graph_handler.send_query(query)
+
+        args, _ = urllib_mock.call_args
+        request = args[0]
+
+        expected_url = 'https://localhost:7474/db/data/cypher'
+        actual_url = request.get_full_url()
+        self.assert_eq(expected_url, actual_url)
+
     def test_send_query(self):
         """tests the fact that queries are correctly sent, with the
         correct headers"""

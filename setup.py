@@ -12,7 +12,7 @@ def readme():
         return rdme.read()
 
 setup(name='pyneo',
-      version='0.1',
+      version='0.2',
       description='Package to handle neo4j server connection',
       long_description=readme(),
       keywords='neo4j graph database',
